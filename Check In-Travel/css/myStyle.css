@@ -1,0 +1,17 @@
+
+
+#myButton {
+
+    background:url(/images/Btn.PNG) no-repeat;
+    cursor:pointer;
+    border: none;
+    overflow: hidden;
+}
+
+.iconsUser {
+	width: 90%; /* actual img width */
+	height: 100%; /* actual img height */
+	background-image: url(students.jpg);
+	background-size: cover;
+	background-position: center;
+}
