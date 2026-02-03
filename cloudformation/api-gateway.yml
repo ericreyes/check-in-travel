@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: API Gateway for Check-in Travel application
+
+Parameters:
+  EnvironmentName:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - staging
+      - prod
+
+Resources:
+  CheckInApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: !Sub '${EnvironmentName}-checkin-api'
+      Description: API for check-in travel operations
+      EndpointConfiguration:
+        Types:
+          - REGIONAL
+
+  CheckInResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref CheckInApi
+      ParentId: !GetAtt CheckInApi.RootResourceId
+      PathPart: 'checkin'
+
+  CheckInMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref CheckInApi
+      ResourceId: !Ref CheckInResource
+      HttpMethod: POST
+      AuthorizationType: AWS_IAM
+      Integration:
+        Type: AWS_PROXY
+        IntegrationHttpMethod: POST
+        Uri: !Sub 'arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CheckInFunction.Arn}/invocations'
+
+Outputs:
+  ApiEndpoint:
+    Description: API Gateway endpoint URL
+    Value: !Sub 'https://${CheckInApi}.execute-api.${AWS::Region}.amazonaws.com/${EnvironmentName}'
+    Export:
+      Name: !Sub '${EnvironmentName}-api-endpoint'
